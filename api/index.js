@@ -8,6 +8,7 @@ const http = require('http');
 const url = require('url');
 
 const { trimPath } = require('./helpers/url-helper');
+const configuration = require('./config');
 
 //The server
 const server = http.createServer((req, res) => {
@@ -43,6 +44,6 @@ const server = http.createServer((req, res) => {
 });
 
 //Start server
-server.listen(3000, () => {
-    console.log('Server started');
+server.listen(configuration.port, () => {
+    console.log(`Server started in ${configuration.configName} mode`);
 });
