@@ -8,13 +8,15 @@ const environments = {};
 
 //dev environment configuration
 environments.development = {
-    'port': 3000,
+    'httpPort': 3000,
+    'httpsPort': 3001,
     'configName': 'development'
 }
 
 //dev environment configuration
 environments.production = {
-    'port': 5000,
+    'httpPort': 5000,
+    'httpsPort': 5001,
     'configName': 'production'
 }
 
