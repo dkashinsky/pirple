@@ -1,5 +1,5 @@
 const url = require('url');
-const { trimPath } = require('../helpers/url-helper');
+const { trimPath } = require('../lib/helpers/url');
 
 function echo(req, res){
     

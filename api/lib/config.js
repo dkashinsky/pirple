@@ -10,14 +10,16 @@ const environments = {};
 environments.development = {
     'httpPort': 3000,
     'httpsPort': 3001,
-    'configName': 'development'
+    'configName': 'development',
+    'hashingSecret': 'dev_hashing_secret'
 }
 
 //dev environment configuration
 environments.production = {
     'httpPort': 5000,
     'httpsPort': 5001,
-    'configName': 'production'
+    'configName': 'production',
+    'hashingSecret': 'prod_hashing_secret'
 }
 
 //get requested environment
