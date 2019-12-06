@@ -6,6 +6,7 @@
 //dependencies
 const fs = require('fs');
 const { join: pathJoin } = require('path');
+const { parseSafe } = require('./helpers/json');
 
 //base path to the file storage based on the '.data' folder inside the project
 const basePath = pathJoin(__dirname, './../.data');
@@ -40,7 +41,7 @@ function create(category, id, data, callback) {
             });
         }
         else {
-            
+
             console.log(filePath);
             console.log(err);
             callback('Could not create new file, it may already exist');
@@ -53,13 +54,12 @@ function read(category, id, callback) {
     const filePath = getFilePath(category, id);
     fs.readFile(filePath, 'utf8', (err, fileContent) => {
         if (!err && fileContent) {
-            try {
-                const data = JSON.parse(fileContent)
-                callback(false, data);
-            }
-            catch {
-                callback('Error reading the data');
-            }
+            parseSafe(fileContent, (err, data) => {
+                if (!err)
+                    callback(false, data);
+                else
+                    callback('Error reading the data');
+            });
         }
         else {
             callback('Error reading the file');
