@@ -4,17 +4,16 @@
  */
 
 // Container 
-const helpers =  {};
+const helpers = {};
 
 // JSON parse with callback
-helpers.parseSafe = function(str, callback){
+helpers.parseSafe = function (str, callback) {
     try {
         const parsedObject = JSON.parse(str);
         callback(false, parsedObject);
-    } 
-    catch (ex) 
-    {
-        callback(ex);
+    }
+    catch (ex) {
+        callback(ex, str);
     }
 };
 
