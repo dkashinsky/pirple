@@ -8,6 +8,7 @@ const { apiError } = require('../helpers/api');
 const { hash } = require('../helpers/hash');
 const { parseSafe } = require('../helpers/json');
 const { Validator, optional, required, regex, bool } = require('../helpers/validation');
+const { phoneValidator } = require('../models/user');
 const fileStorage = require('../file-storage');
 
 // Container for api handlers
@@ -34,7 +35,7 @@ handlers._users = {};
 handlers._users.get = function (request, callback) {
     // Check that the phone number provided is valid
     const validator = new Validator({
-        phone: [regex(/^\d{10}$/)]
+        phone: [phoneValidator]
     });
 
     const validationResult = validator.validate(request.query);
@@ -62,7 +63,7 @@ handlers._users.post = function (request, callback) {
     parseSafe(request.payload, (err, data) => {
         if (!err) {
             const validator = new Validator({
-                phone: [regex(/^\d{10}$/)],
+                phone: [phoneValidator],
                 firstName: [required],
                 lastName: [required],
                 password: [required],
@@ -121,7 +122,7 @@ handlers._users.put = function (request, callback) {
     parseSafe(request.payload, (err, data) => {
         if (!err) {
             const validator = new Validator({
-                phone: [regex(/^\d{10}$/)],
+                phone: [phoneValidator],
                 firstName: [optional],
                 lastName: [optional],
                 password: [optional]
@@ -176,7 +177,7 @@ handlers._users.put = function (request, callback) {
 handlers._users.delete = function (request, callback) {
     // check that the phone number is valid
     const validator = new Validator({
-        phone: [regex(/^\d{10}$/)]
+        phone: [phoneValidator]
     });
 
     const validationResult = validator.validate(request.query);
