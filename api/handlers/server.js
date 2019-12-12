@@ -25,6 +25,7 @@ function server(req, res){
     const request = {
         method: req.method.toLowerCase(),
         path: trimmedPath,
+        headers: req.headers,
         query: requestedUrl.query,
         payload: null
     };

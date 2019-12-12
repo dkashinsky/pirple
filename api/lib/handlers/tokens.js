@@ -186,5 +186,20 @@ handlers._tokens.delete = function (request, callback) {
     }
 };
 
+// verify if a given token id is currently valid for a given user
+handlers.verifyToken = function (id, phone, callback) {
+    //check if token exists
+    fileStorage.read('tokens', id, (err, tokenData) => {
+        if (!err && tokenData) {
+            //check if token belongs to the user and has not expored
+            const isValid = tokenData.phone === phone && tokenData.expires > Date.now();
+            callback(!isValid);
+        }
+        else {
+            callback(true);
+        }
+    });
+};
+
 // export handlers
 module.exports = handlers;
