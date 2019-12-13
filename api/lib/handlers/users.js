@@ -7,7 +7,7 @@
 const { apiError } = require('../helpers/api');
 const { hash } = require('../helpers/hash');
 const { parseSafe } = require('../helpers/json');
-const { Validator, optional, required, regex, bool } = require('../helpers/validation');
+const { Validator, optional, required, bool, minLength } = require('../helpers/validation');
 const { phoneValidator } = require('../models/user');
 const { verifyToken } = require('./tokens');
 const fileStorage = require('../file-storage');
@@ -131,9 +131,9 @@ handlers._users.put = function (request, callback) {
         if (!err) {
             const validator = new Validator({
                 phone: [phoneValidator],
-                firstName: [optional],
-                lastName: [optional],
-                password: [optional]
+                firstName: [optional, minLength(1)],
+                lastName: [optional, minLength(1)],
+                password: [optional, minLength(6)]
             });
 
             const validationResult = validator.validate(data);

@@ -15,8 +15,16 @@ class Validator {
         for (const property in this.validationSchema) {
             if (this.validationSchema.hasOwnProperty(property)) {
                 const validators = this.validationSchema[property];
+                const [modifier] = validators;
+                const value = data[property];
                 const validationResult = [];
-                validators.forEach(validator => validationResult.push(validator(data[property])));
+
+                if (modifier === optional && !modifier(value).value){
+                    validationResult.push(modifier(value))
+                } else {
+                    validators.forEach(validator => validationResult.push(validator(value)));
+                }
+
                 validationMap.set(property, validationResult);
             }
         }
@@ -115,14 +123,15 @@ helpers.required = function (value) {
 };
 
 // optional helper
-helpers.optional = function (value) {
+function optional(value) {
     const type = typeof (value);
     if (type == 'string') {
         const trimmedValue = value.trim();
         return getValidationMeta(value, trimmedValue, true);
     }
     return getValidationMeta(value, value, true);
-};
+}
+helpers.optional = optional;
 
 // number is in provided range
 helpers.between = function ([lower, higher], inclusive = false) {

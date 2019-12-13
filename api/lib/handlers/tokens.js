@@ -7,7 +7,7 @@
 const { apiError } = require('../helpers/api');
 const { hash } = require('../helpers/hash');
 const { parseSafe } = require('../helpers/json');
-const { Validator, optional, required, regex, bool } = require('../helpers/validation');
+const { Validator, required, bool } = require('../helpers/validation');
 const { phoneValidator } = require('../models/user');
 const { tokenValidator, generateTokenId } = require('../models/token');
 const fileStorage = require('../file-storage');

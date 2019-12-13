@@ -5,7 +5,7 @@
 
 // Dependencies
 const { parseSafe } = require('../helpers/json');
-const { Validator, from, minLength, between, notEmptyArray } = require('../helpers/validation');
+const { Validator, optional, from, minLength, between, notEmptyArray } = require('../helpers/validation');
 const { apiError, getToken } = require('../helpers/api');
 const { generateTokenId, tokenValidator } = require('../models/token');
 const { verifyToken } = require('../handlers/tokens');
@@ -138,6 +138,70 @@ handlers._checks.get = function (request, callback) {
     } else {
         callback(400, apiError('Missing or invalid check id'));
     }
+};
+
+// Checks - put
+// Required data: id
+// Optional data: protocol, url, method, successCodes, timeoutSeconds
+handlers._checks.put = function (request, callback) {
+    parseSafe(request.payload, (err, data) => {
+        if (!err) {
+            const validator = new Validator({
+                id: [tokenValidator],
+                protocol: [optional, from(['http', 'https'])],
+                url: [optional, minLength(4)],
+                method: [optional, from(['get', 'post', 'put', 'delete'])],
+                successCodes: [optional, notEmptyArray('number')],
+                timeoutSeconds: [optional, between([1, 5], true)]
+            });
+
+            const validationResult = validator.validate(data);
+            if (validationResult.isValid()) {
+                const updateRequest = validationResult.getData([], false);
+                const { id, protocol, url, method, successCodes, timeoutSeconds } = updateRequest;
+
+                //Check whether request has fields to update
+                if (protocol || url || method || successCodes || timeoutSeconds) {
+                    // lookup the check
+                    fileStorage.read('checks', id, (err, checkData) => {
+                        if (!err && checkData) {
+                            const token = getToken(request);
+                            // check whether check belongs to the authenticated user
+                            verifyToken(token, checkData.userPhone, (err) => {
+                                if (!err) {
+                                    const updatedCheck = { ...checkData, ...updateRequest };
+                                    // Lookup the check data
+                                    fileStorage.update('checks', id, updatedCheck, (err) => {
+                                        if (!err) {
+                                            callback(200);
+                                        }
+                                        else {
+                                            callback(500, apiError('Could not update the check'));
+                                        }
+                                    });
+                                }
+                                else {
+                                    callback(403);
+                                }
+                            });
+                        }
+                        else {
+                            callback(404, apiError('Check to update is not found'));
+                        }
+                    });
+                }
+                else {
+                    callback(400, apiError('Missing fields to update'))
+                }
+            }
+            else {
+                callback(400, apiError('Missing required fields'));
+            }
+        }
+        else {
+            callback(422, apiError('Unable to process entity'));
+        }
+    });
 };
 
 // Export module
