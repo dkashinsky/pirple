@@ -7,7 +7,8 @@
 const { parseSafe } = require('../helpers/json');
 const { Validator, from, minLength, between, notEmptyArray } = require('../helpers/validation');
 const { apiError, getToken } = require('../helpers/api');
-const { generateTokenId } = require('../models/token');
+const { generateTokenId, tokenValidator } = require('../models/token');
+const { verifyToken } = require('../handlers/tokens');
 const fileStorage = require('../file-storage');
 const config = require('../config');
 
@@ -105,6 +106,38 @@ handlers._checks.post = function (request, callback) {
             callback(422, apiError('Unable to process entity'));
         }
     });
+};
+
+// Checks - get
+// Required data: id
+// Optional data: none
+handlers._checks.get = function (request, callback) {
+    const validator = new Validator({
+        id: [tokenValidator]
+    });
+
+    const validationResult = validator.validate(request.query);
+    if (validationResult.isValid()) {
+        const { id: checkId } = validationResult.getData();
+        // lookup requested check
+        fileStorage.read('checks', checkId, (err, checkData) => {
+            if (!err && checkData) {
+                const token = getToken(request);
+                verifyToken(token, checkData.userPhone, (err) => {
+                    if (!err) {
+                        callback(200, checkData);
+                    } else {
+                        callback(403, apiError('Invalid or expired token'));
+                    }
+                });
+            }
+            else {
+                callback(404, apiError('Check not found'));
+            }
+        });
+    } else {
+        callback(400, apiError('Missing or invalid check id'));
+    }
 };
 
 // Export module
