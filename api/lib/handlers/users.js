@@ -190,7 +190,6 @@ handlers._users.put = function (request, callback) {
 
 // Users - delete
 // Required field: phone
-// @TODO: cleanup any other data files associated with this user
 handlers._users.delete = function (request, callback) {
     // check that the phone number is valid
     const validator = new Validator({
@@ -200,17 +199,42 @@ handlers._users.delete = function (request, callback) {
     const validationResult = validator.validate(request.query);
     if (validationResult.isValid()) {
         const user = validationResult.getData();
-        
+
         // only let an authenticated user delete their object
         verifyToken(request.headers.token, user.phone, (err) => {
             if (!err) {
                 fileStorage.read('users', user.phone, (err, userData) => {
                     if (!err && userData) {
                         fileStorage.delete('users', user.phone, (err) => {
-                            if (!err)
-                                callback(200);
-                            else
+                            if (!err) {
+                                const userChecks = userData.checks || [];
+                                const checksToDelete = userChecks.length;
+                                if (checksToDelete > 0) {
+                                    let checksDeleted = 0;
+                                    let deletionErrors = false;
+
+                                    userChecks.forEach(checkId => {
+                                        fileStorage.delete('checks', checkId, (err) => {
+                                            if (err) {
+                                                deletionErrors = true;
+                                            }
+                                            checksDeleted++;
+                                            if (checksDeleted == checksToDelete) {
+                                                if (!deletionErrors) {
+                                                    callback(200);
+                                                } else {
+                                                    callback(500, apiError('Errors encountered while attempting to delete all of the user\'s checks'));
+                                                }
+                                            }
+                                        });
+                                    });
+                                } else {
+                                    callback(200);
+                                }
+                            }
+                            else {
                                 callback(500, apiError('Could not delete the specified user'));
+                            }
                         });
                     }
                     else {
