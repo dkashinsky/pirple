@@ -11,7 +11,8 @@ environments.development = {
     'httpPort': 3000,
     'httpsPort': 3001,
     'configName': 'development',
-    'hashingSecret': 'dev_hashing_secret'
+    'hashingSecret': 'dev_hashing_secret',
+    'maxChecksPerUser' : 5
 }
 
 //dev environment configuration
@@ -19,7 +20,8 @@ environments.production = {
     'httpPort': 5000,
     'httpsPort': 5001,
     'configName': 'production',
-    'hashingSecret': 'prod_hashing_secret'
+    'hashingSecret': 'prod_hashing_secret',
+    'maxChecksPerUser' : 5
 }
 
 //get requested environment

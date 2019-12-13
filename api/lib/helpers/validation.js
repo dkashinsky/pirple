@@ -89,7 +89,11 @@ function getValidationMeta(rawValue, value, isValid) {
 
 // typeof validator
 function typeOf(value, type) {
-    return getValidationMeta(value, value, typeof (value) == type);
+    const actual = typeof (value);
+    if (actual === 'number')
+        return getValidationMeta(value, value, !isNaN(value));
+
+    return getValidationMeta(value, value, actual == type);
 }
 
 // Helpers container
@@ -118,6 +122,23 @@ helpers.optional = function (value) {
         return getValidationMeta(value, trimmedValue, true);
     }
     return getValidationMeta(value, value, true);
+};
+
+// number is in provided range
+helpers.between = function ([lower, higher], inclusive = false) {
+    return value => {
+        const typeCheck = typeOf(value, 'number');
+        if (typeCheck.isValid) {
+            const inclusiveCheck = (v) => v >= lower && v <= higher;
+            const exclusiveCheck = (v) => v > lower && v < higher;
+
+            const check = inclusive ? inclusiveCheck : exclusiveCheck;
+            return getValidationMeta(value, value, check(value));
+        }
+        else {
+            return typeCheck;
+        }
+    };
 };
 
 // min length helper
@@ -157,6 +178,20 @@ helpers.bool = function (expected) {
         else {
             return typeCheck;
         }
+    };
+};
+
+// value in range helper
+helpers.from = function (range) {
+    return value => getValidationMeta(value, value, range.indexOf(value) > -1);
+};
+
+// array validator helper
+helpers.notEmptyArray = function (type) {
+    return value => {
+        const isArray = value instanceof Array && value.length > 0;
+        return getValidationMeta(value, value,
+            isArray && value.every(v => typeOf(v, type).isValid));
     };
 };
 

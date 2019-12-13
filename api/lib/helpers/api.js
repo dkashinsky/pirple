@@ -1,15 +1,22 @@
 /*
- * API helper
+ * API helpers
  *
  */
 
- // API helper container
- const apiHelper = {};
+// api error response
+function apiError(message) {
+    return { error: message };
+};
 
- // api error response
- apiHelper.apiError = function(message){
-     return { error: message };
- };
+// get the auth token
+function getToken(request){
+    return typeof request.headers.token == 'string' 
+        ? request.headers.token 
+        : false;
+}
 
- // Export module
- module.exports = apiHelper;
+// Export module
+module.exports = { 
+    getToken,
+    apiError
+};

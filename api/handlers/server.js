@@ -9,6 +9,7 @@ const { trimPath } = require('../lib/helpers/url');
 const healthCheckHandler = require('../lib/handlers/ping');
 const usersHandler = require('../lib/handlers/users');
 const tokensHandler = require('../lib/handlers/tokens');
+const checksHandler = require('../lib/handlers/checks');
 
 
 function server(req, res){
@@ -62,7 +63,8 @@ handler.notFound = function(request, callback){
 const router = {
     'ping': healthCheckHandler.ping,
     'users': usersHandler.users,
-    'tokens': tokensHandler.tokens
+    'tokens': tokensHandler.tokens,
+    'checks': checksHandler.checks
 };
 
 // Export module
