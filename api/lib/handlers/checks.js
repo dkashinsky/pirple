@@ -204,5 +204,66 @@ handlers._checks.put = function (request, callback) {
     });
 };
 
+// Checks - delete
+// Required data: id
+// Optional data: none
+handlers._checks.delete = function (request, callback) {
+    const validator = new Validator({
+        id: [tokenValidator]
+    });
+
+    const validationResult = validator.validate(request.query);
+    if (validationResult.isValid()) {
+        const { id: checkId } = validationResult.getData();
+        // lookup requested check
+        fileStorage.read('checks', checkId, (err, checkData) => {
+            if (!err && checkData) {
+                const token = getToken(request);
+                verifyToken(token, checkData.userPhone, (err) => {
+                    if (!err) {
+                        fileStorage.delete('checks', checkId, (err) => {
+                            if (!err) {
+                                fileStorage.read('users', checkData.userPhone, (err, userData) => {
+                                    if (!err && userData) {
+                                        const userChecks = userData.checks || [];
+                                        const checkPosition = userChecks.indexOf(checkId);
+
+                                        if (checkPosition > -1) {
+                                            userChecks.splice(checkPosition, 1);
+                                            userData.checks = userChecks;
+
+                                            // update users data
+                                            fileStorage.update('users', checkData.userPhone, userData, (err) => {
+                                                if (!err) {
+                                                    callback(200);
+                                                } else {
+                                                    callback(500, apiError('Could not update the user'));
+                                                }
+                                            });
+                                        } else {
+                                            callback(500, apiError('Could not find the check on the user\'s object'));
+                                        }
+                                    } else {
+                                        callback(500, apiError('Could not find the user who created the check'));
+                                    }
+                                });
+                            } else {
+                                callback(500, apiError('Could not delete the check data'));
+                            }
+                        });
+                    } else {
+                        callback(403, apiError('Invalid or expired token'));
+                    }
+                });
+            }
+            else {
+                callback(404, apiError('Check not found'));
+            }
+        });
+    } else {
+        callback(400, apiError('Missing or invalid check id'));
+    }
+};
+
 // Export module
 module.exports = handlers;
