@@ -19,7 +19,7 @@ class Validator {
                 const value = data[property];
                 const validationResult = [];
 
-                if (modifier === optional && !modifier(value).value){
+                if (modifier === optional && !modifier(value).value) {
                     validationResult.push(modifier(value))
                 } else {
                     validators.forEach(validator => validationResult.push(validator(value)));
@@ -157,6 +157,20 @@ helpers.minLength = function (minLenght) {
         if (typeCheck.isValid) {
             const trimmedValue = value.trim();
             return getValidationMeta(value, trimmedValue, trimmedValue.length >= minLenght);
+        }
+        else {
+            return typeCheck;
+        }
+    };
+};
+
+// max string length helper
+helpers.maxLength = function (maxLength) {
+    return value => {
+        const typeCheck = typeOf(value, 'string');
+        if (typeCheck.isValid) {
+            const trimmedValue = value.trim();
+            return getValidationMeta(value, trimmedValue, trimmedValue.length <= maxLength);
         }
         else {
             return typeCheck;

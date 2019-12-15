@@ -12,7 +12,12 @@ environments.development = {
     'httpsPort': 3001,
     'configName': 'development',
     'hashingSecret': 'dev_hashing_secret',
-    'maxChecksPerUser' : 5
+    'maxChecksPerUser' : 5,
+    'twilio': {
+        'fromPhone': '+15005550006',
+        'accountSid': 'ACb32d411ad7fe886aac54c665d25e5c5d',
+        'authToken': '9455e3eb3109edc12e3d8c92768f7a67'
+    }
 }
 
 //dev environment configuration
@@ -21,7 +26,12 @@ environments.production = {
     'httpsPort': 5001,
     'configName': 'production',
     'hashingSecret': 'prod_hashing_secret',
-    'maxChecksPerUser' : 5
+    'maxChecksPerUser' : 5,
+    'twilio': {
+        'fromPhone': '',
+        'accountSid': '',
+        'authToken': ''
+    }
 }
 
 //get requested environment
