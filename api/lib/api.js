@@ -1,18 +1,18 @@
 /*
-* Main request listener implementation
+* Main API handler
 *
 */
 
 //Dependencies
 const url = require('url');
-const { trimPath } = require('../lib/helpers/url');
-const healthCheckHandler = require('../lib/handlers/ping');
-const usersHandler = require('../lib/handlers/users');
-const tokensHandler = require('../lib/handlers/tokens');
-const checksHandler = require('../lib/handlers/checks');
+const { trimPath } = require('./helpers/url');
+const healthCheckHandler = require('./handlers/ping');
+const usersHandler = require('./handlers/users');
+const tokensHandler = require('./handlers/tokens');
+const checksHandler = require('./handlers/checks');
 
 
-function server(req, res){
+function apiHandler(req, res){
     //get requested url and parse query
     const requestedUrl = url.parse(req.url, true);
     const trimmedPath = trimPath(requestedUrl.pathname);
@@ -68,4 +68,4 @@ const router = {
 };
 
 // Export module
-module.exports = server;
+module.exports = apiHandler;
