@@ -150,6 +150,23 @@ helpers.between = function ([lower, higher], inclusive = false) {
     };
 };
 
+// number is greater than
+helpers.greaterThan = function(minValue, inclusive = false){
+    return (value) => {
+        const typeCheck = typeOf(value, 'number');
+        if (typeCheck.isValid) {
+            const inclusiveCheck = (v) => v >= minValue;
+            const exclusiveCheck = (v) => v > minValue;
+
+            const check = inclusive ? inclusiveCheck : exclusiveCheck;
+            return getValidationMeta(value, value, check(value));
+        }
+        else {
+            return typeCheck;
+        }
+    };
+}
+
 // min length helper
 helpers.minLength = function (minLenght) {
     return value => {

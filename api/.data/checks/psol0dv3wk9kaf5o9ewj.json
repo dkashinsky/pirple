@@ -1,1 +1,1 @@
-{"id":"psol0dv3wk9kaf5o9ewj","userPhone":"1234567890","protocol":"http","url":"ya.ru","method":"get","successCodes":[200],"timeoutSeconds":1}
+{"id":"psol0dv3wk9kaf5o9ewj","userPhone":"1234567890","protocol":"http","url":"ya.ru","method":"get","successCodes":[200,302],"timeoutSeconds":1,"state":"up","lastChecked":1584992833338}

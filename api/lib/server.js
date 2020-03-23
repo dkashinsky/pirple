@@ -24,7 +24,10 @@ const httpsServer = https.createServer(httpsServerOptions, apiHandler);
 
 // Start script
 function start(){
+    // Start the HTTP server
     httpServer.listen(configuration.httpPort, notifyServerStarted(configuration.httpPort, configuration.configName));
+
+    // Start the HTTPS server
     httpsServer.listen(configuration.httpsPort, notifyServerStarted(configuration.httpsPort, configuration.configName));
 }
 
@@ -37,5 +40,6 @@ function notifyServerStarted(port, mode){
 module.exports = {
     httpServer, 
     httpsServer,
+    httpsServerOptions,
     start
 };

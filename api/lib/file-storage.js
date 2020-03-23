@@ -16,6 +16,10 @@ function getFilePath(category, id) {
     return `${basePath}/${category}/${id}.json`;
 }
 
+function getCategoryPath(category) {
+    return `${basePath}/${category}/`;
+}
+
 // write to the file
 function create(category, id, data, callback) {
     // get file path
@@ -117,8 +121,25 @@ function remove(category, id, callback) {
     });
 }
 
+// List all the items in a directory
+function list(category, callback) {
+    fs.readdir(getCategoryPath(category), (err, data) => {
+        if (!err && data && data.length > 0) {
+            const trimmedFileNames = [];
+            data.forEach((fileName) => {
+                trimmedFileNames.push(fileName.replace('.json', ''));
+            });
+            callback(false, trimmedFileNames);
+        }
+        else {
+            callback(err, data);
+        }
+    });
+}
+
 //export fileStorage methods
 module.exports = {
+    list,
     create,
     read,
     update,
